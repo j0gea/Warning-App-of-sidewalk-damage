@@ -3,6 +3,8 @@
 
 안드로이드 개발 용 리포지토리입니다. 
 
+머신러닝 리포지토리는 이쪽으로 옮겼습니다. [https://github.com/j0gea/Machine-Learning-Sidewalk-damage](https://github.com/j0gea/Machine-Learning-Sidewalk-damage)
+
 - - -
 
 IDE : Android Studio Dolphin(2021.3.1)
