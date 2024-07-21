@@ -7,7 +7,7 @@
 
 - - -
 
-IDE : Android Studio Dolphin(2021.3.1)
+IDE : Android Studio Koala | 2024.1.1 
 - AVD 환경
     - Phone - Pixel 2
     - System Image - Tiramisu(33, x86_64, Android Tiramisu(Google APIs))
