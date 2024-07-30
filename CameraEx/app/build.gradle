@@ -36,5 +36,15 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //permission
     implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
+
+    //tensorflow
+    implementation 'org.tensorflow:tensorflow-lite:2.4.0'
+
+    //aws
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.13.5'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.13.5'
 }
