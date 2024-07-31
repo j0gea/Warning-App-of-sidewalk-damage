@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.Tensor;
@@ -18,6 +19,7 @@ public class Detector {
 
     Context context;
     private static final String MODEL_NAME = "best-fp16.tflite";
+    int modelOutputClasses;
 
     int modelInputChannel, modelInputWidth, modelInputHeight; // 모델 입출력 크기 확인용 변수
 
@@ -39,7 +41,7 @@ public class Detector {
         long startOffer = afd.getStartOffset();
         long declaredLength = afd.getDeclaredLength();
 
-        return  fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffer, declaredLength);
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffer, declaredLength);
     }
 
     //모델에 데이터를 입력하고 추론 결과를 전달받을 수 있는 interpreter 클래스
@@ -56,37 +58,54 @@ public class Detector {
 
     //모델 입출력 크기 확인
     private void initModelShape() {
+
+        //입력 크기 확인
         Tensor inputTensor = interpreter.getInputTensor(0);
         int[] inputShape = inputTensor.shape();
         modelInputChannel = inputShape[0];
         modelInputWidth = inputShape[1];
         modelInputHeight = inputShape[2];
+
+        //출력 형태 확인
+        Tensor outputTensor = interpreter.getOutputTensor(0);
+        int [] outputShape = outputTensor.shape();
+        modelOutputClasses = outputShape[1];
+
     }
 
-    //사진 크기 변환
-    private Bitmap resizeBitmap(Bitmap bitmap) {
-        return Bitmap.createScaledBitmap(bitmap, modelInputWidth, modelInputHeight, false);
-    }
 
-    //입력 이미지의 채널과 포맷 변환
-    private ByteBuffer convertBitmapToGrayByteBuffer(Bitmap bitmap) {
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bitmap.getByteCount());
+    private ByteBuffer convertBitmapToByteBuffer(Bitmap bitmap) {
+        int inputSize = 640; // 모델이 기대하는 입력 크기
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * inputSize * inputSize * 3);
         byteBuffer.order(ByteOrder.nativeOrder());
-
-        int[] pixels = new int[bitmap.getWidth()*bitmap.getHeight()];
-        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-        for (int pixel : pixels) {
-            int r = pixel >> 16 & 0xFF;
-            int g = pixel >> 8 & 0xFF;
-            int b = pixel & 0xFF;
-
-            float avgPixelValue = (r + g + b) / 3.0f;
-            float normalizedPixelValue = avgPixelValue / 255.0f;
-
-            byteBuffer.putFloat(normalizedPixelValue);
+        int[] intValues = new int[inputSize * inputSize];
+        bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        int pixel = 0;
+        for (int i = 0; i < inputSize; ++i) {
+            for (int j = 0; j < inputSize; ++j) {
+                final int val = intValues[pixel++];
+                byteBuffer.putFloat(((val >> 16) & 0xFF) / 255.0f);
+                byteBuffer.putFloat(((val >> 8) & 0xFF) / 255.0f);
+                byteBuffer.putFloat((val & 0xFF) / 255.0f);
+            }
         }
         return byteBuffer;
+
     }
 
-}
+    //도보 파손 여부 탐지
+    public float[][][] detect(Bitmap bitmap) {
+        int modelInputWidth = 640;
+        int modelInputHeight = 640;
+
+        // 입력 이미지를 모델의 기대 크기로 조정
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, modelInputWidth, modelInputHeight, true);
+
+        // 이미지 데이터를 ByteBuffer로 변환
+        ByteBuffer byteBuffer = convertBitmapToByteBuffer(resizedBitmap);
+        float[][][] result = new float[1][25200][6];
+        interpreter.run(byteBuffer, result);
+
+        return result;
+        }
+    }
