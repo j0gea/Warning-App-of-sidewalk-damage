@@ -3,7 +3,6 @@ package com.capstone.cameraex;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -24,11 +24,14 @@ import androidx.core.content.FileProvider;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,7 +49,15 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(OpenCVLoader.initDebug()) {
+            Log.d("OpenCV","OpenCV initiallize");
+        } else {
+            Log.d("OpenCV","OpenCV Not Initiallize");
+        }
+
         imageView = findViewById(R.id.imageView4);
+
+        TextView textView = findViewById(R.id.textView);
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -69,6 +80,16 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             public void onActivityResult(Boolean success) {
                 if (success) {
                     displayImage();
+
+                    BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+                    Bitmap bitmap = drawable.getBitmap();
+                    float[][][] result = detector.detect(bitmap);
+
+                    //3차원 배열
+                    String res = Arrays.deepToString(result);
+
+                    Log.d("result",res);
+//                    textView.setText(res);
                     saveImage();
 //                    uploadImage();
                 } else {
