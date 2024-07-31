@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:rotationX="300"
     tools:context=".MainActivity">
 
     <Button
@@ -16,7 +17,7 @@
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="match_parent"
-        android:layout_height="630dp" />
+        android:layout_height="280dp" />
 
     <TextView
         android:id="@+id/textView"
@@ -24,5 +25,6 @@
         android:layout_height="match_parent"
         android:textAlignment="center"
         android:textSize="48sp" />
+
 
 </LinearLayout>
