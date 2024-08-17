@@ -3,33 +3,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- OpenCV Camera View -->
     <org.opencv.android.JavaCameraView
         android:id="@+id/javaCameraView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"/>
+        android:visibility="visible" />
 
+    <!-- TextView for status message -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="25dp"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="25dp"
         android:text=" 보도 파손 탐지 중 "
         android:background="#80000000"
         android:textColor="#FFFFFF"
         android:textSize="48sp" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
+    <!-- LinearLayout to contain buttons at the bottom -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|right"
-        android:layout_marginTop="25dp"
-        android:layout_marginRight="25dp"
-        android:background="#FFFFFF"
-        android:text=" 중지 "
-        android:textColor="#000000"
-        android:textSize="28sp" />
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:padding="10dp">
+
+        <!-- Settings Button -->
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/rectangle_button"
+            android:padding="16dp"
+            android:text="환경설정"
+            android:textSize="28sp" />
+
+        <!-- Exit Button -->
+        <Button
+            android:id="@+id/button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/rectangle_button"
+            android:padding="16dp"
+            android:text="종료"
+            android:textSize="28sp"/>
+    </LinearLayout>
 
 </FrameLayout>
