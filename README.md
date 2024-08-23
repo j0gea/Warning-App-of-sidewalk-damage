@@ -13,3 +13,4 @@ IDE : Android Studio Koala | 2024.1.1
     - System Image - Tiramisu(33, x86_64, Android Tiramisu(Google APIs))
 
 개발 플랫폼 : 안드로이드 13 애플리케이션
+테스트 기기 : 갤럭시 S10, S22
