@@ -1,11 +1,8 @@
-package com.capstone.cameraex;
+package com.capstone.cameraex.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -13,68 +10,87 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
 
 
+import com.capstone.cameraex.R;
+import com.capstone.cameraex.StartView;
+import com.capstone.cameraex.detect.Detector;
+import com.capstone.cameraex.detect.FullImageAnalyse;
+import com.capstone.cameraex.utils.CameraProcess;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
 
-import org.opencv.android.OpenCVLoader;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
-
 public class MainActivity extends AppCompatActivity implements AutoPermissionsListener {
 
-    ImageView imageView;
-    File photoFile;
-    Uri photoUri;
-    Detector detector;
-
-    ActivityResultLauncher<Uri> takePictureLauncher;
+    private PreviewView cameraPreviewMatch;
+    private PreviewView cameraPreviewWrap;
+    private ImageView boxLabel;
+    private Detector detector;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private CameraProcess cameraProcess = new CameraProcess();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(OpenCVLoader.initDebug()) {
-            Log.d("OpenCV","OpenCV initiallize");
-        } else {
-            Log.d("OpenCV","OpenCV Not Initiallize");
-        }
+        AutoPermissions.Companion.loadAllPermissions(this, 101);
 
-        imageView = findViewById(R.id.imageView4);
+        //전체화면 설정
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+//        getWindow().setStatusBarColor(Color.TRANSPARENT); //상태표시줄 투명하게
 
+        cameraPreviewMatch = findViewById(R.id.camera_preview_match);
+        cameraPreviewMatch.setScaleType(PreviewView.ScaleType.FILL_START);
+
+        cameraPreviewWrap = findViewById(R.id.camera_preview_wrap);
+
+        boxLabel = findViewById(R.id.box_label);
+
+        //탐지중
         TextView textView = findViewById(R.id.textView);
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
-        Button button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        Log.i("image", "rotation: " + rotation);
+
+        cameraProcess.showCameraSupportSize(MainActivity.this);
+
+        loadModel("best-fp16");
+        cameraPreviewMatch.removeAllViews();
+        FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(MainActivity.this,
+                cameraPreviewWrap,
+                boxLabel,
+                rotation,
+                detector);
+        cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+
+        //종료 버튼
+        findViewById(R.id.endButton).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                takePictureLauncher.launch(photoUri);
+            public void onClick(View view) {
+                //시작화면으로 돌아가기
+                startActivity(new Intent(MainActivity.this, StartView.class));
             }
         });
+    }
 
-        //detector 생성하고 초기화
-        detector = new Detector(this);
-        try {
-            detector.init();
-        } catch (IOException e){
-            Log.d("Detector", "failed to init Detector");
-        }
+    private void loadModel(String modelName){
+        this.detector = new Detector();
+        this.detector.setModelFile(modelName);
+        this.detector.initModel(this);
+    }
 
+
+    /**
+     * 이미지 저장 기능 필요시 추가
+     **/
+    /*
         takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), new ActivityResultCallback<Boolean>() {
             @Override
             public void onActivityResult(Boolean success) {
@@ -164,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         if (photoUri != null) {
             try {
                 Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                imageView.setImageBitmap(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -188,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             e.printStackTrace();
         }
     }
-
+*/
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
