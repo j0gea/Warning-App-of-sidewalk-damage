@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -142,6 +143,125 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         this.detector.initModel(this);
     }
 
+    /**
+     * 이미지 저장 기능 필요시 추가
+     **/
+    /*
+        takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), new ActivityResultCallback<Boolean>() {
+            @Override
+            public void onActivityResult(Boolean success) {
+                if (success) {
+                    displayImage();
+
+                    BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+                    Bitmap bitmap = drawable.getBitmap();
+                    float[][][] result = detector.detect(bitmap);
+
+                    //3차원 배열
+                    String res = Arrays.deepToString(result);
+
+                    Log.d("result",res);
+//                    textView.setText(res);
+                    saveImage();
+//                    uploadImage();
+                } else {
+                    Toast.makeText(MainActivity.this, "Failed to capture image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        checkStorageDir();
+        createImageFile();
+
+        AutoPermissions.Companion.loadAllPermissions(this, 101);
+    }
+
+    //이미지 저장
+    private void saveImage() {
+
+        try {
+            if(photoFile == null){
+                Toast.makeText(this, "사진 파일이 생성되지 않았습니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Log.d("MainActivity", "Saving image to: " + photoFile.getAbsolutePath());
+
+            FileOutputStream outputStream = null;
+
+            try {
+                outputStream = new FileOutputStream(photoFile);
+                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+                Bitmap bitmap = drawable.getBitmap();
+
+                if(bitmap == null) {
+                    Toast.makeText(this,"저장할 사진이 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream); //JPEG 형식으로 압축
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Toast.makeText(this, "사진 저장 완료", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "저장 실패", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+//    private void uploadImage() {
+//
+//    }
+
+    private void checkStorageDir() {
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (!storageDir.exists()){
+            boolean mkdirs = storageDir.mkdirs();
+            if (!mkdirs) {
+                Toast.makeText(this, "저장소 폴더 생성 실패",  Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    private void displayImage() {
+        if (photoUri != null) {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void createImageFile() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getFilesDir();
+        try {
+            photoFile = File.createTempFile(
+                    imageFileName,
+                    ".jpg",
+                    storageDir
+            );
+            photoUri = FileProvider.getUriForFile(MainActivity.this,
+                    "com.capstone.cameraex.fileprovider",
+                    photoFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+*/
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -173,9 +293,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             if (success) {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
-                float azimuth = orientation[0]; // Z축 회전 (방위각)
                 float pitch = orientation[1]; // X축 회전 (피치)
-                float roll = orientation[2]; // Y축 회전 (롤)
 
                 // 기울기 로그 출력
                 if (Math.toDegrees(pitch) > -50 && Math.toDegrees(pitch) < 0) {
@@ -184,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                     // TTS 처리 부분
                     long currentTime = System.currentTimeMillis();
                     if (currentTime - lastSpokenTime > TTS_DELAY_MS && tts != null) { // 2초 지연 체크
-                        String totalSpeak = "기울기 경보";
+                        String totalSpeak = "경사 주의";
                         tts.setPitch(1.5f);
                         tts.setSpeechRate(1.0f);
                         tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
