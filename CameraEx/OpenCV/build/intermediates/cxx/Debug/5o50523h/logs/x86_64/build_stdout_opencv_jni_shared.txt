@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\CookAndroid\Project\capston\Warning-App-of-sidewalk-damage\CameraEx\OpenCV\.cxx\Debug\5o50523h\x86_64'
-ninja: no work to do.

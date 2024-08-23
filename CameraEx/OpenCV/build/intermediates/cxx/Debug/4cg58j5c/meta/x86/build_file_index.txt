@@ -1,1 +1,0 @@
-C:\Users\user\AndroidStudioProjects\Warning-App-of-sidewalk-damage\CameraEx\OpenCV\libcxx_helper\CMakeLists.txt
