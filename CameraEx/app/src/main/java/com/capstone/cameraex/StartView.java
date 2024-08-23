@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.capstone.cameraex.activity.ActivitySetting;
+import com.capstone.cameraex.activity.MainActivity;
+
 public class StartView extends AppCompatActivity {
 
     @Override

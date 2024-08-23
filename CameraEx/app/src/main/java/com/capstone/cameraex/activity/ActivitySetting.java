@@ -1,5 +1,5 @@
 // SettingsActivity.java
-package com.capstone.cameraex;
+package com.capstone.cameraex.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.capstone.cameraex.R;
 
 public class ActivitySetting extends AppCompatActivity {
 
