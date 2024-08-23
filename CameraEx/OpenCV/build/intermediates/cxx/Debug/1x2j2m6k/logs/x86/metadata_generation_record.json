@@ -2,7 +2,7 @@
   {
     "level_": 0,
     "message_": "Start JSON generation. Platform version: 26 min SDK version: x86",
-    "file_": "C:\\Users\\user\\AndroidStudioProjects\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
+    "file_": "D:\\coding\\capston\\v4\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
     "tag_": "debug|x86",
     "diagnosticCode_": 0,
     "memoizedIsInitialized": 1,
@@ -11,12 +11,12 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": -843706276
+    "memoizedHashCode": 147059360
   },
   {
     "level_": 0,
-    "message_": "JSON \u0027C:\\Users\\user\\AndroidStudioProjects\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\.cxx\\Debug\\1x2j2m6k\\x86\\android_gradle_build.json\u0027 was up-to-date",
-    "file_": "C:\\Users\\user\\AndroidStudioProjects\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
+    "message_": "JSON \u0027D:\\coding\\capston\\v4\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\.cxx\\Debug\\1x2j2m6k\\x86\\android_gradle_build.json\u0027 was up-to-date",
+    "file_": "D:\\coding\\capston\\v4\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
     "tag_": "debug|x86",
     "diagnosticCode_": 0,
     "memoizedIsInitialized": 1,
@@ -25,12 +25,12 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": 401678308
+    "memoizedHashCode": 1716382049
   },
   {
     "level_": 0,
     "message_": "JSON generation completed without problems",
-    "file_": "C:\\Users\\user\\AndroidStudioProjects\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
+    "file_": "D:\\coding\\capston\\v4\\Warning-App-of-sidewalk-damage\\CameraEx\\OpenCV\\libcxx_helper\\CMakeLists.txt",
     "tag_": "debug|x86",
     "diagnosticCode_": 0,
     "memoizedIsInitialized": 1,
@@ -39,6 +39,6 @@
       "fieldsDescending": {}
     },
     "memoizedSize": -1,
-    "memoizedHashCode": 1887782802
+    "memoizedHashCode": -1416418858
   }
 ]

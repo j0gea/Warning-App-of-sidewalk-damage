@@ -3,6 +3,6 @@
 3    package="org.opencv" >
 4
 5    <uses-sdk android:minSdkVersion="26" />
-5-->C:\Users\user\AndroidStudioProjects\Warning-App-of-sidewalk-damage\CameraEx\OpenCV\java\AndroidManifest.xml
+5-->D:\coding\capston\v4\Warning-App-of-sidewalk-damage\CameraEx\OpenCV\java\AndroidManifest.xml
 6
 7</manifest>
