@@ -31,18 +31,44 @@ import android.speech.tts.TextToSpeech;
 
 import javax.xml.transform.Result;
 
+import android.os.Handler;
+import android.os.Looper;
+
+// FullImageAnalyse 클래스의 일부분
+
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
+    public static class Result {
+
+        long costTime;
+        Bitmap bitmap;
+
+        public Result(long costTime, Bitmap bitmap) {
+            this.costTime = costTime;
+            this.bitmap = bitmap;
+        }
+
+        public long getCostTime() {
+            return costTime;
+        }
+
+        public Bitmap getBitmap() {
+            return bitmap;
+        }
+    }
+
+    // 기존 필드
     private final Context context;
-
-    // tts 정의
     private TextToSpeech tts;
-
     ImageView boxLabelCanvas;
     PreviewView previewView;
     int rotation;
     ImageProcess imageProcess;
     private Detector detector;
+
+    // 새로 추가된 필드
+    private long lastSpokenTime = 0; // 마지막으로 TTS가 실행된 시간
+    private static final int TTS_DELAY_MS = 2000; // 2초(2000 밀리초) 지연 시간
 
     // 기본 생성자
     public FullImageAnalyse(Context context) {
@@ -74,27 +100,6 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
             }
         });
     }
-
-    public static class Result {
-
-        long costTime;
-        Bitmap bitmap;
-
-        public Result(long costTime, Bitmap bitmap) {
-            this.costTime = costTime;
-            this.bitmap = bitmap;
-        }
-
-        public long getCostTime() {
-            return costTime;
-        }
-
-        public Bitmap getBitmap() {
-            return bitmap;
-        }
-    }
-
-
 
     @Override
     public void analyze(@NonNull ImageProxy image) {
@@ -177,12 +182,18 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         cropCanvas.drawRect(location, boxPaint);
                         cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
 
-                        Log.d("TestDetector", label);
-                        String totalSpeak = "전방에 " + label + "가 있습니다.";
-                        tts.setPitch(1.5f);
-                        tts.setSpeechRate(1.0f);
-                        tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
+                        // TTS 처리 부분
+                        long currentTime = System.currentTimeMillis();
+                        if (currentTime - lastSpokenTime > TTS_DELAY_MS) { // 2초 지연 체크
+                            Log.d("TestDetector", label);
+                            String totalSpeak = "전방에 " + label + "가 있습니다.";
+                            tts.setPitch(1.5f);
+                            tts.setSpeechRate(1.0f);
+                            tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
+                            lastSpokenTime = currentTime; // 마지막 실행 시간을 갱신
+                        }
                     }
+
                     long end = System.currentTimeMillis();
                     long costTime = (end - start);
                     image.close();
@@ -195,4 +206,3 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 });
     }
 }
-
