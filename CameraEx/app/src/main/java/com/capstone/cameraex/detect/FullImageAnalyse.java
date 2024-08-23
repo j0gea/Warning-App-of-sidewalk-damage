@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -18,23 +19,24 @@ import com.capstone.cameraex.utils.DetectObject;
 import com.capstone.cameraex.utils.ImageProcess;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+// tts 추가
+import android.speech.tts.TextToSpeech;
+
+import javax.xml.transform.Result;
+
 public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
-    public static class Result{
+    private final Context context;
 
-        public Result(long costTime, Bitmap bitmap) {
-            this.costTime = costTime;
-            this.bitmap = bitmap;
-        }
-        long costTime;
-        Bitmap bitmap;
-    }
+    // tts 정의
+    private TextToSpeech tts;
 
     ImageView boxLabelCanvas;
     PreviewView previewView;
@@ -42,11 +44,19 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
     ImageProcess imageProcess;
     private Detector detector;
 
+    // 기본 생성자
+    public FullImageAnalyse(Context context) {
+        this.context = context;
+        initializeTextToSpeech();
+    }
+
+    // 추가된 생성자: context 초기화 추가
     public FullImageAnalyse(Context context,
                             PreviewView previewView,
                             ImageView boxLabelCanvas,
                             int rotation,
                             Detector detector) {
+        this(context); // 기존 생성자를 호출하여 context 및 tts 초기화
         this.previewView = previewView;
         this.boxLabelCanvas = boxLabelCanvas;
         this.rotation = rotation;
@@ -54,57 +64,84 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         this.detector = detector;
     }
 
+    private void initializeTextToSpeech() {
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
+    }
+
+    public static class Result {
+
+        long costTime;
+        Bitmap bitmap;
+
+        public Result(long costTime, Bitmap bitmap) {
+            this.costTime = costTime;
+            this.bitmap = bitmap;
+        }
+
+        public long getCostTime() {
+            return costTime;
+        }
+
+        public Bitmap getBitmap() {
+            return bitmap;
+        }
+    }
+
+
+
     @Override
     public void analyze(@NonNull ImageProxy image) {
         int previewHeight = previewView.getHeight();
         int previewWidth = previewView.getWidth();
 
-        Observable.create( (ObservableEmitter<Result> emitter) -> {
+        Observable.create((ObservableEmitter<Result> emitter) -> {
                     long start = System.currentTimeMillis();
 
                     byte[][] yuvBytes = new byte[3][];
                     ImageProxy.PlaneProxy[] planes = image.getPlanes();
                     int imageHeight = image.getHeight();
-                    int imagewWidth = image.getWidth();
+                    int imageWidth = image.getWidth();
 
                     imageProcess.fillBytes(planes, yuvBytes);
                     int yRowStride = planes[0].getRowStride();
                     final int uvRowStride = planes[1].getRowStride();
                     final int uvPixelStride = planes[1].getPixelStride();
 
-                    int[] rgbBytes = new int[imageHeight * imagewWidth];
+                    int[] rgbBytes = new int[imageHeight * imageWidth];
                     imageProcess.YUV420ToARGB8888(
                             yuvBytes[0],
                             yuvBytes[1],
                             yuvBytes[2],
-                            imagewWidth,
+                            imageWidth,
                             imageHeight,
                             yRowStride,
                             uvRowStride,
                             uvPixelStride,
                             rgbBytes);
 
-                    // 원본 이미지 bitmap
-                    Bitmap imageBitmap = Bitmap.createBitmap(imagewWidth, imageHeight, Bitmap.Config.ARGB_8888);
-                    imageBitmap.setPixels(rgbBytes, 0, imagewWidth, 0, 0, imagewWidth, imageHeight);
+                    Bitmap imageBitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
+                    imageBitmap.setPixels(rgbBytes, 0, imageWidth, 0, 0, imageWidth, imageHeight);
 
-                    // 화면에 맞게 조정된 fill_start 형식의 bitmap
                     double scale = Math.max(
-                            previewHeight / (double) (rotation % 180 == 0 ? imagewWidth : imageHeight),
-                            previewWidth / (double) (rotation % 180 == 0 ? imageHeight : imagewWidth)
+                            previewHeight / (double) (rotation % 180 == 0 ? imageWidth : imageHeight),
+                            previewWidth / (double) (rotation % 180 == 0 ? imageHeight : imageWidth)
                     );
                     Matrix fullScreenTransform = imageProcess.getTransformationMatrix(
-                            imagewWidth, imageHeight,
-                            (int) (scale * imageHeight), (int) (scale * imagewWidth),
+                            imageWidth, imageHeight,
+                            (int) (scale * imageHeight), (int) (scale * imageWidth),
                             rotation % 180 == 0 ? 90 : 0, false
                     );
 
-                    // preview에 맞게 전체 크기로 조정된 bitmap
-                    Bitmap fullImageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imagewWidth, imageHeight, fullScreenTransform, false);
-                    // 화면에 표시되는 preview 크기만큼 잘라낸 bitmap
+                    Bitmap fullImageBitmap = Bitmap.createBitmap(imageBitmap, 0, 0, imageWidth, imageHeight, fullScreenTransform, false);
                     Bitmap cropImageBitmap = Bitmap.createBitmap(fullImageBitmap, 0, 0, previewWidth, previewHeight);
 
-                    // 모델 입력에 사용할 bitmap
                     Matrix previewToModelTransform =
                             imageProcess.getTransformationMatrix(
                                     cropImageBitmap.getWidth(), cropImageBitmap.getHeight(),
@@ -123,12 +160,10 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                     Bitmap emptyCropSizeBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
                     Canvas cropCanvas = new Canvas(emptyCropSizeBitmap);
 
-                    // 테두리용 Paint 객체
                     Paint boxPaint = new Paint();
                     boxPaint.setStrokeWidth(5);
                     boxPaint.setStyle(Paint.Style.STROKE);
                     boxPaint.setColor(Color.RED);
-                    // 텍스트용 Paint 객체
                     Paint textPain = new Paint();
                     textPain.setTextSize(50);
                     textPain.setColor(Color.RED);
@@ -141,19 +176,23 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         modelToPreviewTransform.mapRect(location);
                         cropCanvas.drawRect(location, boxPaint);
                         cropCanvas.drawText(label + ":" + String.format("%.2f", confidence), location.left, location.top, textPain);
+
+                        Log.d("TestDetector", label);
+                        String totalSpeak = "전방에 " + label + "가 있습니다.";
+                        tts.setPitch(1.5f);
+                        tts.setSpeechRate(1.0f);
+                        tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
                     }
                     long end = System.currentTimeMillis();
                     long costTime = (end - start);
                     image.close();
                     emitter.onNext(new Result(costTime, emptyCropSizeBitmap));
 
-
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((Result result) -> {
                     boxLabelCanvas.setImageBitmap(result.bitmap);
                 });
-
     }
 }
 
