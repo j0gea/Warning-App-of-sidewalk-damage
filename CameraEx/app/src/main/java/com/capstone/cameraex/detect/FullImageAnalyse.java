@@ -33,6 +33,7 @@ import javax.xml.transform.Result;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.TextView;
 
 // FullImageAnalyse 클래스의 일부분
 
@@ -62,6 +63,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
     private TextToSpeech tts;
     ImageView boxLabelCanvas;
     PreviewView previewView;
+    TextView inferenceTimeTextView;
     int rotation;
     ImageProcess imageProcess;
     private Detector detector;
@@ -81,12 +83,14 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                             PreviewView previewView,
                             ImageView boxLabelCanvas,
                             int rotation,
+                            TextView inferenceTimeTextView,
                             Detector detector) {
         this(context); // 기존 생성자를 호출하여 context 및 tts 초기화
         this.previewView = previewView;
         this.boxLabelCanvas = boxLabelCanvas;
         this.rotation = rotation;
         this.imageProcess = new ImageProcess();
+        this.inferenceTimeTextView = inferenceTimeTextView;
         this.detector = detector;
     }
 
@@ -201,6 +205,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((Result result) -> {
                     boxLabelCanvas.setImageBitmap(result.bitmap);
+                    inferenceTimeTextView.setText(Long.toString(result.costTime) + "ms");
                 });
     }
 }

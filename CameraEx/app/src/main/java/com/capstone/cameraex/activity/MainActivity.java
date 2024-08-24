@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
     private PreviewView cameraPreviewMatch;
     private ImageView boxLabel;
+    private TextView inferenceTimeText;
     private Detector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private CameraProcess cameraProcess = new CameraProcess();
@@ -81,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
         boxLabel = findViewById(R.id.box_label);
 
+        inferenceTimeText = findViewById(R.id.inferenceTimeTextView);
+
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -93,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                 cameraPreviewMatch,
                 boxLabel,
                 rotation,
+                inferenceTimeText,
                 detector);
         cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewMatch);
 
