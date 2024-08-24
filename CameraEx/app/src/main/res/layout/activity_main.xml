@@ -12,8 +12,6 @@
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent">
-
-
     </androidx.camera.view.PreviewView>
 
     <androidx.camera.view.PreviewView
@@ -22,6 +20,18 @@
         android:layout_height="2240px"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/camera_preview_match"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="20dp"
+        android:background="#80000000"
+        android:text=" 탐지 중 "
+        android:textSize="24sp"
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/box_label"
@@ -45,7 +55,6 @@
             android:layout_height="match_parent"
             android:text="종료"
             android:textSize="24sp"/>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
