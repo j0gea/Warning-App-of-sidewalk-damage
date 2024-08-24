@@ -133,7 +133,6 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
 
                     Bitmap imageBitmap = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
                     imageBitmap.setPixels(rgbBytes, 0, imageWidth, 0, 0, imageWidth, imageHeight);
-
                     double scale = Math.max(
                             previewHeight / (double) (rotation % 180 == 0 ? imageWidth : imageHeight),
                             previewWidth / (double) (rotation % 180 == 0 ? imageHeight : imageWidth)
@@ -198,7 +197,6 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                     long costTime = (end - start);
                     image.close();
                     emitter.onNext(new Result(costTime, emptyCropSizeBitmap));
-
                 }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((Result result) -> {

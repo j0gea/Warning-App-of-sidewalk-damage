@@ -1,13 +1,10 @@
 package com.capstone.cameraex.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,7 +33,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity implements AutoPermissionsListener, SensorEventListener {
 
     private PreviewView cameraPreviewMatch;
-    private PreviewView cameraPreviewWrap;
     private ImageView boxLabel;
     private Detector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
@@ -83,11 +79,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         cameraPreviewMatch = findViewById(R.id.camera_preview_match);
         cameraPreviewMatch.setScaleType(PreviewView.ScaleType.FILL_START);
 
-        cameraPreviewWrap = findViewById(R.id.camera_preview_wrap);
-
         boxLabel = findViewById(R.id.box_label);
 
-        TextView textView = findViewById(R.id.textView);
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -96,13 +89,12 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         cameraProcess.showCameraSupportSize(MainActivity.this);
 
         loadModel("best-fp16");
-        cameraPreviewMatch.removeAllViews();
         FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(MainActivity.this,
-                cameraPreviewWrap,
+                cameraPreviewMatch,
                 boxLabel,
                 rotation,
                 detector);
-        cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewWrap);
+        cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewMatch);
 
         // 종료 버튼
         findViewById(R.id.endButton).setOnClickListener(new View.OnClickListener() {
