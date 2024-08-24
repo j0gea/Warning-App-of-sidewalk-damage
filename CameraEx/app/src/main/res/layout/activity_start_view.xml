@@ -10,14 +10,21 @@
     android:layout_height="match_parent"
     tools:context=".StartView">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="400dp"
+        android:layout_height="300dp"
+        app:srcCompat="@drawable/golf_cart" />
+
+
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="WheelEye"
-        android:textSize="50sp"
-        android:layout_marginBottom="100dp"
-        android:gravity="center" />
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:text="Cart Vision"
+        android:textSize="50sp" />
 
     <Button
         android:id="@+id/startButton"
@@ -34,7 +41,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/rectangle_button"
+        android:gravity="center"
         android:text="환경설정"
-        android:textSize="28sp"
-        android:gravity="center" />
+        android:textSize="28sp" />
+
 </LinearLayout>
