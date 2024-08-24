@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     private void loadModel(String modelName) {
         this.detector = new Detector();
         this.detector.setModelFile(modelName);
+        this.detector.addGpuDelegate();
         this.detector.initModel(this);
     }
 

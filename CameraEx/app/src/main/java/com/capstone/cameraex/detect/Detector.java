@@ -10,6 +10,8 @@ import com.capstone.cameraex.utils.DetectObject;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.gpu.CompatibilityList;
+import org.tensorflow.lite.gpu.GpuDelegate;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
 import org.tensorflow.lite.support.image.ImageProcessor;
@@ -37,7 +39,7 @@ public class Detector {
     private final String LABEL_FILE_NAME = "label.txt";
 
     //탐지 임계점 설정
-    private final float DETECT_THRESHOLD = 0.45f;
+    private final float DETECT_THRESHOLD = 0.25f;
     private final float IOU_THRESHOLD = 0.45f;
     private final float IOU_CLASS_DUPLICATED_THRESHOLD = 0.7f;
 
@@ -252,5 +254,17 @@ public class Detector {
         float i = boxIntersection(a, b);
         float u = (a.right - a.left) * (a.bottom - a.top) + (b.right - b.left) * (b.bottom - b.top) - i;
         return u;
+    }
+
+    public void addGpuDelegate(){
+        CompatibilityList compatList = new CompatibilityList();
+
+        if(compatList.isDelegateSupportedOnThisDevice()){
+            GpuDelegate.Options delegateOptions = compatList.getBestOptionsForThisDevice();
+            GpuDelegate gpuDelegate = new GpuDelegate(delegateOptions);
+            options.addDelegate(gpuDelegate);
+        } else {
+            options.setNumThreads(4);
+        }
     }
 }
