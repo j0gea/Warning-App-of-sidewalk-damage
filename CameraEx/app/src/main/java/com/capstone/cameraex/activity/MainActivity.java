@@ -3,6 +3,7 @@ package com.capstone.cameraex.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //세로 모드 고정
 
         AutoPermissions.Companion.loadAllPermissions(this, 101);
 
