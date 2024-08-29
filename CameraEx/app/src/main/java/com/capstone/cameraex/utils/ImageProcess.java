@@ -1,18 +1,9 @@
 package com.capstone.cameraex.utils;
 
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
-import android.util.Size;
 
 import androidx.camera.core.ImageProxy;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.image.ImageProcessor;
-import org.tensorflow.lite.support.image.TensorImage;
-import org.tensorflow.lite.support.image.ops.ResizeOp;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-
 import java.nio.ByteBuffer;
 
 
@@ -33,7 +24,6 @@ public class ImageProcess {
 
 
     public int YUV2RGB(int y, int u, int v) {
-        // Adjust and check YUV values
         y = (y - 16) < 0 ? 0 : (y - 16);
         u -= 128;
         v -= 128;
@@ -118,22 +108,4 @@ public class ImageProcess {
         return matrix;
     }
 
-    public static TensorImage resizeImage(Bitmap bitmap, Size size) {
-        ImageProcessor imageProcessor =
-                new ImageProcessor.Builder()
-                        .add(new ResizeOp(size.getHeight(), size.getWidth(), ResizeOp.ResizeMethod.BILINEAR))
-                        .build();
-
-        TensorImage tImage = new TensorImage(DataType.UINT8);
-
-        tImage.load(bitmap);
-        tImage = imageProcessor.process(tImage);
-
-        TensorBuffer probabilityBuffer =
-                TensorBuffer.createFixedSize(new int[]{1, 1001}, DataType.FLOAT32);
-
-
-
-        return tImage;
-    }
 }
