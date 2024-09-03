@@ -5,6 +5,8 @@
 
 머신러닝 리포지토리는 이쪽으로 옮겼습니다. [https://github.com/j0gea/Machine-Learning-Sidewalk-damage](https://github.com/j0gea/Machine-Learning-Sidewalk-damage)
 
+서버 리포지토리 https://github.com/KSJ-0/WarningApp-Server
+
 - - -
 
 IDE : Android Studio Koala | 2024.1.1 
@@ -12,6 +14,6 @@ IDE : Android Studio Koala | 2024.1.1
     - Phone - Pixel 2
     - System Image - Tiramisu(33, x86_64, Android Tiramisu(Google APIs))
 
-개발 플랫폼 : 안드로이드 13 애플리케이션
+개발 플랫폼 : 안드로이드 애플리케이션
 
 테스트 기기 : 갤럭시 S10, S22
