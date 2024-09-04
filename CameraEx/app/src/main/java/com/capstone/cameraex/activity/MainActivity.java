@@ -1,7 +1,16 @@
 package com.capstone.cameraex.activity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.renderscript.RenderScript;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,12 +21,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 
 import com.capstone.cameraex.R;
 import com.capstone.cameraex.StartView;
 import com.capstone.cameraex.detect.Detector;
 import com.capstone.cameraex.detect.FullImageAnalyse;
+import com.capstone.cameraex.gps.DetectLocation;
+import com.capstone.cameraex.gps.LocationDatabase;
 import com.capstone.cameraex.utils.CameraProcess;
+import com.capstone.cameraex.utils.DetectObject;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.pedro.library.AutoPermissions;
 import com.pedro.library.AutoPermissionsListener;
@@ -39,6 +55,16 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     private Detector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private CameraProcess cameraProcess = new CameraProcess();
+
+    //DB
+    private LocationDatabase db;
+
+    //GPS
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+    private double latitude; //위도
+    private double longitude; //경도
+    private FusedLocationProviderClient fusedLocationClient;
 
     // 기울기 센서 관련 변수
     private SensorManager sensorManager;
@@ -69,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //세로 모드 고정
 
         AutoPermissions.Companion.loadAllPermissions(this, 101);
 
@@ -87,18 +114,25 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        db = LocationDatabase.getDatabase(this);
+
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         Log.i("image", "rotation: " + rotation);
 
         cameraProcess.showCameraSupportSize(MainActivity.this);
 
         loadModel("best-fp16");
-        FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(MainActivity.this,
+        FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
+                MainActivity.this,  // MainActivity 인스턴스 전달
+                MainActivity.this,
                 cameraPreviewMatch,
                 boxLabel,
                 rotation,
                 inferenceTimeText,
-                detector);
+                detector
+        );
         cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewMatch);
 
         // 종료 버튼
@@ -141,123 +175,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
         this.detector.initModel(this);
     }
 
-    /**
-     * 이미지 저장 기능 필요시 추가
-     **/
-    /*
-        takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), new ActivityResultCallback<Boolean>() {
-            @Override
-            public void onActivityResult(Boolean success) {
-                if (success) {
-                    displayImage();
-
-                    BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-                    Bitmap bitmap = drawable.getBitmap();
-                    float[][][] result = detector.detect(bitmap);
-
-                    //3차원 배열
-                    String res = Arrays.deepToString(result);
-
-                    Log.d("result",res);
-//                    textView.setText(res);
-                    saveImage();
-//                    uploadImage();
-                } else {
-                    Toast.makeText(MainActivity.this, "Failed to capture image", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        checkStorageDir();
-        createImageFile();
-
-        AutoPermissions.Companion.loadAllPermissions(this, 101);
-    }
-
-    //이미지 저장
-    private void saveImage() {
-
-        try {
-            if(photoFile == null){
-                Toast.makeText(this, "사진 파일이 생성되지 않았습니다.",Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            Log.d("MainActivity", "Saving image to: " + photoFile.getAbsolutePath());
-
-            FileOutputStream outputStream = null;
-
-            try {
-                outputStream = new FileOutputStream(photoFile);
-                BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-                Bitmap bitmap = drawable.getBitmap();
-
-                if(bitmap == null) {
-                    Toast.makeText(this,"저장할 사진이 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, outputStream); //JPEG 형식으로 압축
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (outputStream != null) {
-                        outputStream.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            Toast.makeText(this, "사진 저장 완료", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "저장 실패", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-//    private void uploadImage() {
-//
-//    }
-
-    private void checkStorageDir() {
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (!storageDir.exists()){
-            boolean mkdirs = storageDir.mkdirs();
-            if (!mkdirs) {
-                Toast.makeText(this, "저장소 폴더 생성 실패",  Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-    private void displayImage() {
-        if (photoUri != null) {
-            try {
-                Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void createImageFile() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getFilesDir();
-        try {
-            photoFile = File.createTempFile(
-                    imageFileName,
-                    ".jpg",
-                    storageDir
-            );
-            photoUri = FileProvider.getUriForFile(MainActivity.this,
-                    "com.capstone.cameraex.fileprovider",
-                    photoFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-*/
 
 
     @Override
@@ -316,4 +233,36 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // 센서 정확도가 변경될 때 호출되지만, 여기서는 사용하지 않음
     }
+
+    public void getLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            // 위치 데이터를 얻었다면 DB에 저장
+                            saveLocationToDB(location);
+                        }
+                    }
+                });
+    }
+
+    private void saveLocationToDB(Location location) {
+        final DetectLocation locationEntity = new DetectLocation(location.getLatitude(), location.getLongitude());
+
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                db.locationDao().insertLocation(locationEntity);
+            }
+        });
+    }
+
+
 }

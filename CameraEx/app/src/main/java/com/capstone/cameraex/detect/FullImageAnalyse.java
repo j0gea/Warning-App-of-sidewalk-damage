@@ -15,6 +15,7 @@ import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.view.PreviewView;
 
+import com.capstone.cameraex.activity.MainActivity;
 import com.capstone.cameraex.utils.DetectObject;
 import com.capstone.cameraex.utils.ImageProcess;
 
@@ -67,6 +68,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
     int rotation;
     ImageProcess imageProcess;
     private Detector detector;
+    MainActivity mainActivity;
 
     // 새로 추가된 필드
     private long lastSpokenTime = 0; // 마지막으로 TTS가 실행된 시간
@@ -78,20 +80,22 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         initializeTextToSpeech();
     }
 
-    // 추가된 생성자: context 초기화 추가
     public FullImageAnalyse(Context context,
+                            MainActivity mainActivity,
                             PreviewView previewView,
                             ImageView boxLabelCanvas,
                             int rotation,
                             TextView inferenceTimeTextView,
                             Detector detector) {
-        this(context); // 기존 생성자를 호출하여 context 및 tts 초기화
+        this.context = context;
+        this.mainActivity = mainActivity; // MainActivity 초기화
         this.previewView = previewView;
         this.boxLabelCanvas = boxLabelCanvas;
         this.rotation = rotation;
         this.imageProcess = new ImageProcess();
         this.inferenceTimeTextView = inferenceTimeTextView;
         this.detector = detector;
+        initializeTextToSpeech();
     }
 
     private void initializeTextToSpeech() {
@@ -189,11 +193,16 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                         long currentTime = System.currentTimeMillis();
                         if (currentTime - lastSpokenTime > TTS_DELAY_MS) { // 2초 지연 체크
                             Log.d("TestDetector", label);
-                            String totalSpeak = "전방에 " + label + "가 있습니다.";
+                            String totalSpeak = "전방에 " + label + "이 있습니다.";
                             tts.setPitch(1.5f);
                             tts.setSpeechRate(1.0f);
                             tts.speak(totalSpeak, TextToSpeech.QUEUE_FLUSH, null);
                             lastSpokenTime = currentTime; // 마지막 실행 시간을 갱신
+                        }
+
+                        if (mainActivity != null) {
+                            mainActivity.getLocation();
+
                         }
                     }
 
