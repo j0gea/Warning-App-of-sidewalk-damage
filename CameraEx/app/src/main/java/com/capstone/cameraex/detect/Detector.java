@@ -33,7 +33,7 @@ public class Detector {
     private String MODEL_FILE;
 
     //모델 정보 설정
-    private final String MODEL_NAME = "best-fp16-g3-1.tflite";
+    private final String MODEL_NAME = "best-fp16-broken-sidewalk.tflite";
     private final Size INPUT_SIZE = new Size(640, 640);
     private final int[] OUTPUT_SIZE = new int[]{1, 25200, 9};
     private final String LABEL_FILE_NAME = "label.txt";
