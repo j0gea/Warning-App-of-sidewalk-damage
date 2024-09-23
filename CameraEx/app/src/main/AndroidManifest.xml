@@ -28,11 +28,12 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/golf_cart"
+        android:icon="@drawable/wheelchair"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CameraEx"
+        android:usesCleartextTraffic="true"
         tools:targetApi="34">            <!--API 33 이상을 요구-->
 
 
