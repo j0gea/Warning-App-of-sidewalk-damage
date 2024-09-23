@@ -56,22 +56,18 @@
             android:layout_marginRight="10dp"
             app:layout_constraintBottom_toTopOf="@id/endButton"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:textColor="@color/white"/>
 
         <TextView
             android:id="@+id/gradientTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="282dp"
             android:text="기울기"
             android:textColor="@color/white"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@id/endButton"
-            app:layout_constraintEnd_toStartOf="@+id/inferenceTimeTextView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginRight="10dp"
+            app:layout_constraintBottom_toTopOf="@id/inferenceTimeTextView"
+            app:layout_constraintRight_toRightOf="parent"/>
 
 
 
