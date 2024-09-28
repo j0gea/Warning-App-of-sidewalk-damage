@@ -65,6 +65,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
     ImageView boxLabelCanvas;
     PreviewView previewView;
     TextView inferenceTimeTextView;
+    TextView gradientTextView;
     int rotation;
     ImageProcess imageProcess;
     private Detector detector;
@@ -86,6 +87,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
                             ImageView boxLabelCanvas,
                             int rotation,
                             TextView inferenceTimeTextView,
+                            TextView gradientTextView,
                             Detector detector) {
         this.context = context;
         this.mainActivity = mainActivity; // MainActivity 초기화
@@ -94,6 +96,7 @@ public class FullImageAnalyse implements ImageAnalysis.Analyzer {
         this.rotation = rotation;
         this.imageProcess = new ImageProcess();
         this.inferenceTimeTextView = inferenceTimeTextView;
+        this.gradientTextView = gradientTextView;
         this.detector = detector;
         initializeTextToSpeech();
     }

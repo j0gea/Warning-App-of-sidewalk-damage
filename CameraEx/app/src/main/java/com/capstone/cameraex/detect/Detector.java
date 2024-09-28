@@ -33,9 +33,9 @@ public class Detector {
     private String MODEL_FILE;
 
     //모델 정보 설정
-    private final String MODEL_NAME = "best-fp16-g3-1.tflite";
-    private final Size INPUT_SIZE = new Size(640, 640);
-    private final int[] OUTPUT_SIZE = new int[]{1, 25200, 9};
+    private final String MODEL_NAME = "best-fp16-broken-sidewalk.tflite";
+    private final Size INPUT_SIZE = new Size(416, 416);
+    private final int[] OUTPUT_SIZE = new int[]{1, 10647, 6};
     private final String LABEL_FILE_NAME = "label.txt";
 
     //탐지 임계점 설정

@@ -28,6 +28,7 @@ import com.capstone.cameraex.StartView;
 import com.capstone.cameraex.detect.Detector;
 import com.capstone.cameraex.detect.FullImageAnalyse;
 import com.capstone.cameraex.gps.DetectLocation;
+import com.capstone.cameraex.gps.GpsService;
 import com.capstone.cameraex.gps.LocationDatabase;
 import com.capstone.cameraex.utils.CameraProcess;
 import com.capstone.cameraex.utils.DetectObject;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     private PreviewView cameraPreviewMatch;
     private ImageView boxLabel;
     private TextView inferenceTimeText;
+    private TextView gradientText;
     private Detector detector;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private CameraProcess cameraProcess = new CameraProcess();
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     private double latitude; //위도
     private double longitude; //경도
     private FusedLocationProviderClient fusedLocationClient;
+    private GpsService gpsService;
 
     // 기울기 센서 관련 변수
     private SensorManager sensorManager;
@@ -75,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
     // TextToSpeech 변수
     private TextToSpeech tts;
+
+    //서버 주소
+    public static String SERVER_URL = "http://localhost:8080";
 
     // 새로 추가된 필드
     private long lastSpokenTime = 0; // 마지막으로 TTS가 실행된 시간
@@ -112,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
         inferenceTimeText = findViewById(R.id.inferenceTimeTextView);
 
+        gradientText = findViewById(R.id.gradientTextView);
+
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -131,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                 boxLabel,
                 rotation,
                 inferenceTimeText,
+                gradientText,
                 detector
         );
         cameraProcess.startCamera(MainActivity.this, fullImageAnalyse, cameraPreviewMatch);
@@ -209,10 +218,10 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 float pitch = orientation[1]; // X축 회전 (피치)
+                gradientText.setText(String.format("%f",Math.toDegrees(pitch)));
 
                 // 기울기 로그 출력
                 if (Math.toDegrees(pitch) > -50 && Math.toDegrees(pitch) < 0) {
-                    Log.d("Test", "위험");
 
                     // TTS 처리 부분
                     long currentTime = System.currentTimeMillis();
@@ -255,10 +264,14 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
     private void saveLocationToDB(Location location) {
         final DetectLocation locationEntity = new DetectLocation(location.getLatitude(), location.getLongitude());
-
+//        String detection = String.valueOf(location.getLatitude())+","+String.valueOf(location.getLongitude());
+////        Log.d("DetectLocation", detection);
+////        gpsService.saveDetectLocation(locationEntity);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
+//                Log.d("DetectLocation", detection);
+//                gpsService.saveDetectLocation(locationEntity);
                 db.locationDao().insertLocation(locationEntity);
             }
         });
