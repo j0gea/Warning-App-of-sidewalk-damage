@@ -1,27 +1,71 @@
-<!-- res/layout/activity_settings.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/personalInfo"
+    <!-- 상단 배너 텍스트 뷰 -->
+    <TextView
+        android:id="@+id/bannerTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="개인정보 입력"/>
+        android:layout_height="80dp"
+        android:gravity="center"
+        android:text="개인정보 설정"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:background="#FFE762"
+        android:padding="10dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-    <EditText
-        android:id="@+id/caregiverContact"
-        android:layout_width="match_parent"
+    <!-- 중앙에 배치할 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/centerLayout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="보호자 연락처 입력"
-        android:inputType="phone"/>
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/bannerTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.5"> <!-- 레이아웃을 중앙에 위치 -->
 
-    <Button
-        android:id="@+id/saveSettingsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rectangle_button"
-        android:text="저장"/>
-</LinearLayout>
+        <!-- 개인정보 입력 EditText -->
+        <EditText
+            android:id="@+id/personalInfo"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="개인정보 입력"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/> <!-- 아래 간격 추가 -->
+
+        <!-- 보호자 연락처 입력 EditText -->
+        <EditText
+            android:id="@+id/caregiverContact"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:hint="보호자 연락처 입력"
+            android:inputType="phone"
+            android:gravity="center"
+            android:layout_marginBottom="50dp"/> <!-- 아래 간격 추가 -->
+
+        <!-- 저장 버튼 -->
+        <Button
+            android:id="@+id/saveSettingsButton"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:text="저장"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:backgroundTint="#FFE762"
+            android:padding="10dp"
+            android:gravity="center"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
