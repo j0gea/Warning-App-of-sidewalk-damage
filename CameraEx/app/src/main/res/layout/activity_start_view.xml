@@ -4,45 +4,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="0dp"
     android:gravity="center"
+    android:background="#FFE762"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".StartView">
 
+
+
+    <!-- Wheelchair 이미지 -->
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="400dp"
-        android:layout_height="300dp"
-        app:srcCompat="@drawable/wheelchair" />
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/wheelchairimg"
+        android:layout_gravity="center"
+        />
 
-
+    <!-- WheelEye 텍스트 -->
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:gravity="center"
-        android:text=""
-        android:textSize="50sp" />
+        android:text="WheelEye"
+        android:shadowColor="#000000"
+        android:shadowDx="10"
+        android:shadowDy="10"
+        android:shadowRadius="20"
+        android:textColor="#FFFFFF"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:layout_gravity="center" />
 
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/rectangle_button"
-        android:text="시작하기"
-        android:textSize="28sp"
-        android:gravity="center" />
 
-    <Button
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
+    <!-- 빈 공간 추가 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        /> <!-- 남은 공간을 채우는 View -->
+
+    <!-- 버튼 영역 -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rectangle_button"
+        android:orientation="vertical"
         android:gravity="center"
-        android:text="환경설정"
-        android:textSize="28sp" />
+        android:padding="16dp">
+
+        <!-- "시작하기" 버튼 (가로로 길게) -->
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="시작하기"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="#000000"
+            android:backgroundTint="#FFFFFF"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- "환경설정" 버튼 (가로로 길게) -->
+        <Button
+            android:id="@+id/settingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="환경설정"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textColor="#000000"
+            android:backgroundTint="#FFFFFF"
+            android:padding="16dp" />
+
+    </LinearLayout>
+
 
 </LinearLayout>
+
+
