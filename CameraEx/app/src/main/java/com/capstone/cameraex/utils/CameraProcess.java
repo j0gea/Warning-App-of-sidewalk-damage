@@ -41,9 +41,6 @@ public class CameraProcess {
     }
 
 
-    public void requestPermissions(Activity activity) {
-        ActivityCompat.requestPermissions(activity, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
-    }
 
 
     public void startCamera(Context context, ImageAnalysis.Analyzer analyzer, PreviewView previewView) {
