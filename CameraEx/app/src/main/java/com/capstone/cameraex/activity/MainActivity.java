@@ -153,6 +153,16 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             }
         });
 
+        // 설정 버튼 리스너 추가
+        findViewById(R.id.anotherButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 설정 버튼 클릭 시 ActivitySetting으로 이동
+                Intent intent = new Intent(MainActivity.this, ActivitySetting.class);
+                startActivity(intent);
+            }
+        });
+
         // 기울기 센서 초기화
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
