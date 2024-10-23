@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     private double latitude; //위도
     private double longitude; //경도
     private FusedLocationProviderClient fusedLocationClient;
-    private GpsService gpsService;
+    private GpsService gpsService = new GpsService();
 
     // 기울기 센서 관련 변수
     private SensorManager sensorManager;
@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
     // TextToSpeech 변수
     private TextToSpeech tts;
 
-    //서버 주소
-    public static String SERVER_URL = "http://localhost:8080";
 
     // 새로 추가된 필드
     private long lastSpokenTime = 0; // 마지막으로 TTS가 실행된 시간
@@ -131,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
 
         cameraProcess.showCameraSupportSize(MainActivity.this);
 
-        loadModel("best-fp16");
+        loadModel("best-fp");
         FullImageAnalyse fullImageAnalyse = new FullImageAnalyse(
                 MainActivity.this,  // MainActivity 인스턴스 전달
                 MainActivity.this,
@@ -250,32 +248,23 @@ public class MainActivity extends AppCompatActivity implements AutoPermissionsLi
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
             return;
         }
+        Log.d("LocationDetect","위치 로딩");
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
                             // 위치 데이터를 얻었다면 DB에 저장
-                            saveLocationToDB(location);
+                            Log.d("LocationDetect", "위치 감지: " + location.getLatitude() + ", " + location.getLongitude());
+                            gpsService.saveDetectLocation(new DetectLocation(location.getLatitude(), location.getLongitude()));
+                        }
+                        else {
+                            Log.d("LocationDetect", "위치가 null입니다.");
                         }
                     }
                 });
     }
 
-    private void saveLocationToDB(Location location) {
-        final DetectLocation locationEntity = new DetectLocation(location.getLatitude(), location.getLongitude());
-//        String detection = String.valueOf(location.getLatitude())+","+String.valueOf(location.getLongitude());
-////        Log.d("DetectLocation", detection);
-////        gpsService.saveDetectLocation(locationEntity);
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-//                Log.d("DetectLocation", detection);
-//                gpsService.saveDetectLocation(locationEntity);
-                db.locationDao().insertLocation(locationEntity);
-            }
-        });
-    }
 
 
 }
