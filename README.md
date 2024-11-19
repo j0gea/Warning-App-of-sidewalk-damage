@@ -13,9 +13,9 @@
 
 메인(안드로이드 개발용) 리포지토리입니다. 
 
-머신러닝 리포지토리: [https://github.com/j0gea/Machine-Learning-Sidewalk-damage](https://github.com/j0gea/Machine-Learning-Sidewalk-damage)
+[머신러닝 리포지토리](https://github.com/j0gea/Machine-Learning-Sidewalk-damage)
 
-서버 리포지토리: https://github.com/KSJ-0/WarningApp-Server
+[서버 리포지토리](https://github.com/KSJ-0/WarningApp-Server)
 
 - - -
 
